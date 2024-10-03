@@ -134,7 +134,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &-1328109837152859893
 MonoBehaviour:
@@ -148,7 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 279fdd667e7dac34484382adb2fbd1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  maxSpeed: 10
-  friction: 5
-  playerCamera: {fileID: 0}
+  moveSpeed: 15
+  maxSpeed: 20
+  friction: 3
+  inputActionAsset: {fileID: -944628639613478452, guid: d5988865c7e0be9408ef02572cbce297, type: 3}
+  playerNumber: 0
