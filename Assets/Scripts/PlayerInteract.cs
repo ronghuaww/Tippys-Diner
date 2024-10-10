@@ -56,4 +56,19 @@ public void OnInteract(InputAction.CallbackContext context)
     }
 }
 
+public Food GetCarriedFood()
+{
+    return currentFood; // Return the currently carried food
+}
+
+public void DropCarriedFood()
+{
+    if (currentFood != null)
+    {
+        currentFood.Drop(); // Drop the food
+        currentFood = null; // Clear the reference
+    }
+}
+
+
 }
