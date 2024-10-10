@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
 
     public InputActionAsset inputActionAsset; // Reference to the Input Action Asset
+    public Transform carryPoint; // Transform where the food will be attached when picked up
 
     public int playerNumber; // 1 or 2 to determine the player
 
@@ -19,12 +20,17 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 moveInput;
 
+    private PlayerInteract playerInteract; // Reference to the PlayerInteract script
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.drag = friction;
 
         AssignActionsBasedOnPlayerNumber();
+
+        // Get the PlayerInteract component on the same GameObject
+        playerInteract = GetComponent<PlayerInteract>();
     }
 
     void OnEnable()
@@ -39,7 +45,7 @@ public class PlayerController : MonoBehaviour
         if (interactAction != null)
         {
             interactAction.Enable();
-            interactAction.performed += OnInteract;
+            interactAction.performed += OnInteract; // Link the interact action
         }
     }
 
@@ -64,31 +70,41 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
-    void Move()
+void Move()
+{
+    Vector3 forward = Camera.main.transform.forward;
+    Vector3 right = Camera.main.transform.right;
+
+    forward.y = 0f; 
+    right.y = 0f;
+
+    forward.Normalize();
+    right.Normalize();
+
+    Vector3 moveDirection = (forward * moveInput.y + right * moveInput.x).normalized;
+
+    rb.AddForce(moveDirection * moveSpeed);
+
+    // Rotate the player to face the movement
+    if (moveDirection != Vector3.zero)
     {
-        Vector3 forward = Camera.main.transform.forward;
-        Vector3 right = Camera.main.transform.right;
-
-        forward.y = 0f; 
-        right.y = 0f;
-
-        forward.Normalize();
-        right.Normalize();
-
-        Vector3 moveDirection = (forward * moveInput.y + right * moveInput.x).normalized;
-
-        rb.AddForce(moveDirection * moveSpeed);
-
-        if (rb.velocity.magnitude > maxSpeed)
-        {
-            rb.velocity = rb.velocity.normalized * maxSpeed;
-        }
-
-        if (moveInput == Vector2.zero)
-        {
-            rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, friction * Time.deltaTime);
-        }
+        Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
+
+    // Clamp the velocity to the maximum speed
+    if (rb.velocity.magnitude > maxSpeed)
+    {
+        rb.velocity = rb.velocity.normalized * maxSpeed;
+    }
+
+    // Slow down the player smoothly when no input is provided
+    if (moveInput == Vector2.zero)
+    {
+        rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, friction * Time.deltaTime);
+    }
+}
+
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -102,18 +118,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void OnInteract(InputAction.CallbackContext context)
+    private void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && playerInteract != null)
         {
-            Debug.Log("Interact action performed!");
-            Interact();
+            playerInteract.OnInteract(context); // Call the OnInteract method in PlayerInteract
         }
-    }
-
-    private void Interact()
-    {
-        Debug.Log("Interacting with an object.");
     }
 
     private void AssignActionsBasedOnPlayerNumber()
