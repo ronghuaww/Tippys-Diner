@@ -1,6 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum CustomerState {
+    Ordering,
+    Waiting,
+    Eating,
+    Happy,
+    Angry
+}
 
 public class Customers : MonoBehaviour
 {
@@ -9,35 +18,84 @@ public class Customers : MonoBehaviour
     public float friction = 5f;
     public GameObject[] tables = new GameObject[3];
 
+    public GameObject exit; 
+
     private Rigidbody rb;
 
-    private Vector3 table_position; 
-    // Start is called before the first frame update
+    [SerializeField] HappyBar hb;
+
+    private Vector3 table_position;
+
+    private float happinessLevel = 100f; 
+    public CustomerState curState;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        hb = GetComponentInChildren<HappyBar>();
+    }
     void Start()
     {
-        int rand_table = Random.Range(0, 3); 
-        table_position = tables[rand_table].transform.position; 
-        rb = GetComponent<Rigidbody>();
+
+        int rand_table = Random.Range(0, 3);
+        table_position = tables[rand_table].transform.position;
         rb.drag = friction;
+        hb.UpdateHappy(happinessLevel);
+        curState = CustomerState.Ordering;
     }
 
-    // Update is called once per frame
-    void Update()
+// Update is called once per frame
+    void FixedUpdate()
     {
-        Move();
+        switch (curState) {
+            case CustomerState.Ordering:
+            SearchForTable();
+            break;
+
+            case CustomerState.Waiting:
+            WaitingForFood();
+            break;
+
+            case CustomerState.Eating:
+            break;
+
+            case CustomerState.Happy:
+            HeadToExit();
+            break;
+            
+            case CustomerState.Angry:
+            HeadToExit();
+            break;
+        }
     }
 
-    void Move()
-    {
-        // Move our position a step closer to the target.
-        var step =  moveSpeed * Time.deltaTime; // calculate distance to move
-        transform.position = Vector3.MoveTowards(transform.position, table_position, step);
+    private void SearchForTable() {
+        if (Vector3.Distance(transform.position, table_position) >= 1.3f)
+        {
+            var step = moveSpeed * Time.deltaTime; // calculate distance to move
+            transform.position = Vector3.MoveTowards(transform.position, table_position, step);
+            rb.isKinematic = true;
+        } else {
+            curState = CustomerState.Waiting;
+        }
+    }
 
-        // // Check if the position of the cube and sphere are approximately equal.
-        // if (Vector3.Distance(transform.position, target.position) < 0.001f)
-        // {
-        //     // Swap the position of the cylinder.
-        //     target.position *= -1.0f;
-        // }
+    private void WaitingForFood() {
+        if (happinessLevel > 0) 
+        {
+            happinessLevel -= Time.deltaTime * 10f; 
+            Debug.Log(happinessLevel); 
+            hb.UpdateHappy(happinessLevel);
+        } else {
+            curState = CustomerState.Angry;
+        }
+    }
+
+    private void HeadToExit() {
+        if (Vector3.Distance(transform.position, exit.transform.position) >= 1.0f && exit) 
+        {
+            var step = moveSpeed * Time.deltaTime; // calculate distance to move
+            transform.position = Vector3.MoveTowards(transform.position, exit.transform.position, step);
+        }
     }
 }
