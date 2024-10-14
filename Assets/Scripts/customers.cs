@@ -23,6 +23,8 @@ public class Customers : MonoBehaviour
     private Rigidbody rb;
 
     [SerializeField] HappyBar hb;
+    [SerializeField] Canvas ui;
+
 
     private Vector3 table_position;
 
@@ -33,6 +35,8 @@ public class Customers : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         hb = GetComponentInChildren<HappyBar>();
+        ui = GetComponentInChildren<Canvas>();
+
     }
     void Start()
     {
@@ -42,6 +46,7 @@ public class Customers : MonoBehaviour
         rb.drag = friction;
         hb.UpdateHappy(happinessLevel);
         curState = CustomerState.Ordering;
+        ui.enabled = false; 
     }
 
 // Update is called once per frame
@@ -81,6 +86,7 @@ public class Customers : MonoBehaviour
     }
 
     private void WaitingForFood() {
+        ui.enabled = true; 
         if (happinessLevel > 0) 
         {
             happinessLevel -= Time.deltaTime * 10f; 
@@ -92,6 +98,7 @@ public class Customers : MonoBehaviour
     }
 
     private void HeadToExit() {
+        ui.enabled = false; 
         if (Vector3.Distance(transform.position, exit.transform.position) >= 1.0f && exit) 
         {
             var step = moveSpeed * Time.deltaTime; // calculate distance to move
