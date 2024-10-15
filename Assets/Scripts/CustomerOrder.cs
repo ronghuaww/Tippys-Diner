@@ -6,28 +6,32 @@ public class CustomerOrder : MonoBehaviour
     public string requiredFoodTag;
     public bool OrderDone = false;
 
+    private int playerNumber = -1;
+
     private List<Food> foodInTrigger = new List<Food>(); // List to track food in the trigger area
 
     private void Start()
     {
-        AssignFoodOrder();
+
     }
 
     private void Update()
     {
         // Check for food delivery
-        foreach (Food foodItem in foodInTrigger)
+        if(!OrderDone)
         {
-            if (!foodItem.IsPickedUp && foodItem.CompareTag(requiredFoodTag))
+            foreach (Food foodItem in foodInTrigger)
             {
-                TryDeliverFood(foodItem);
-                break; // Stop checking after the first correct order is delivered
+                if (!foodItem.IsPickedUp && foodItem.CompareTag(requiredFoodTag))
+                {
+                    TryDeliverFood(foodItem);
+                    break;
+                }
             }
         }
     }
 
-    // Method to assign a random food order to the customer
-    private void AssignFoodOrder()
+    public void AssignFoodOrder()
     {
         string[] possibleOrders = { "Hamburger", "Soup", "HotDog" };
         int randomIndex = Random.Range(0, possibleOrders.Length);
@@ -38,16 +42,14 @@ public class CustomerOrder : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"Triggered by: {other.name}"); // Log which object triggered the event
-
-        // Check if the collider's gameObject is food
-        GameObject otherGameObject = other.gameObject; // Get the GameObject from the collider
+        Debug.Log($"Triggered by: {other.name}");
+        GameObject otherGameObject = other.gameObject;
         if (otherGameObject.CompareTag("Hamburger") || otherGameObject.CompareTag("HotDog") || otherGameObject.CompareTag("Soup"))
         {
             Food foodItem = otherGameObject.GetComponent<Food>();
-            if (foodItem != null && !foodItem.IsPickedUp) // Ensure food is not picked up
+            if (foodItem != null && !foodItem.IsPickedUp)
             {
-                foodInTrigger.Add(foodItem); // Add food item to the list
+                foodInTrigger.Add(foodItem);
                 Debug.Log($"{foodItem.name} entered the trigger area.");
             }
             else
@@ -59,16 +61,15 @@ public class CustomerOrder : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log($"Exited by: {other.name}"); // Log which object exited the event
+        Debug.Log($"Exited by: {other.name}");
 
-        // Check if the collider's gameObject is food
-        GameObject otherGameObject = other.gameObject; // Get the GameObject from the collider
+        GameObject otherGameObject = other.gameObject;
         if (otherGameObject.CompareTag("Hamburger") || otherGameObject.CompareTag("HotDog") || otherGameObject.CompareTag("Soup"))
         {
             Food foodItem = otherGameObject.GetComponent<Food>();
             if (foodItem != null)
             {
-                foodInTrigger.Remove(foodItem); // Remove food item from the list
+                foodInTrigger.Remove(foodItem);
                 Debug.Log($"{foodItem.name} exited the trigger area.");
             }
         }
@@ -76,12 +77,8 @@ public class CustomerOrder : MonoBehaviour
 
     private void TryDeliverFood(Food foodItem)
     {
-        // Check if the food item matches the required food tag
-        int playerNumber = foodItem.LastPlayerNumber;
-        OrderDone = true; // Mark the order as completed
+        playerNumber = foodItem.LastPlayerNumber;
+        OrderDone = true;
         Debug.Log($"CORRECT ORDER delivered: {requiredFoodTag} by Player {playerNumber}");
-        
-        // Optionally, remove the food item from the trigger list
-        foodInTrigger.Remove(foodItem);
     }
 }

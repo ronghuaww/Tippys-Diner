@@ -36,8 +36,6 @@ public class Food : MonoBehaviour, IInteractable
             // Check if the food is already picked up by another player
             if (!isPickedUp || lastPlayerNumber == playerNumber)
             {
-                // Allow the player to interact with the food only if it is not picked up 
-                // or if the player is the same player who last held it
                 if (!isPickedUp)
                 {
                     PickUp(carryPoint, playerNumber);

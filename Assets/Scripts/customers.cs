@@ -30,6 +30,7 @@ public class Customers : MonoBehaviour
 
     private float happinessLevel = 100f; 
     public CustomerState curState;
+    public CustomerOrder customerOrder;
 
     void Awake()
     {
@@ -82,6 +83,7 @@ public class Customers : MonoBehaviour
             rb.isKinematic = true;
         } else {
             curState = CustomerState.Waiting;
+            customerOrder.AssignFoodOrder();
         }
     }
 
@@ -92,6 +94,10 @@ public class Customers : MonoBehaviour
             happinessLevel -= Time.deltaTime * 10f; 
             Debug.Log(happinessLevel); 
             hb.UpdateHappy(happinessLevel);
+            if(customerOrder.OrderDone)
+            {
+                curState = CustomerState.Eating;
+            }
         } else {
             curState = CustomerState.Angry;
         }
@@ -104,5 +110,12 @@ public class Customers : MonoBehaviour
             var step = moveSpeed * Time.deltaTime; // calculate distance to move
             transform.position = Vector3.MoveTowards(transform.position, exit.transform.position, step);
         }
+    }
+
+    private void Eating()
+    {
+        ui.enabled = false;
+        //play rat eating animation
+        
     }
 }
