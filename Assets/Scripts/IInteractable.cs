@@ -5,6 +5,7 @@ using UnityEngine;
 // IInteractable.cs
 public interface IInteractable
 {
-    void PlayerInteract(); // Method to handle player interaction
+    void PlayerInteract(GameObject player); // Takes a GameObject representing the player
 }
+
 

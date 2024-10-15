@@ -29,7 +29,6 @@ public class PlayerController : MonoBehaviour
 
         AssignActionsBasedOnPlayerNumber();
 
-        // Get the PlayerInteract component on the same GameObject
         playerInteract = GetComponent<PlayerInteract>();
     }
 

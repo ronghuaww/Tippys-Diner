@@ -4,37 +4,78 @@ using System.Collections;
 public class Food : MonoBehaviour, IInteractable
 {
     private bool isPickedUp = false; // To track if the food is already picked up
+    private int lastPlayerNumber = -1; // To keep track of the last player number who held the food
 
-    public bool IsPickedUp => isPickedUp; // Public property to access the picked up state
+    public bool IsPickedUp => isPickedUp; // Public property to access the picked-up state
+    public int LastPlayerNumber => lastPlayerNumber; // Public property to access the last player number who held the food
 
-    public void PlayerInteract()
+    private Rigidbody rb; // Rigidbody component
+
+    private void Awake()
     {
-        Transform carryPoint = GameObject.FindWithTag("CarryPoint").transform;
-        if (!isPickedUp)
+        // Ensure the food has a Rigidbody component for physics interactions
+        rb = gameObject.GetComponent<Rigidbody>();
+        if (rb == null)
         {
-            PickUp(carryPoint);
+            rb = gameObject.AddComponent<Rigidbody>();
         }
-        else
+
+        // Initialize Rigidbody properties
+        rb.useGravity = false; // Initially, gravity is off
+        rb.isKinematic = true; // Initially, the food is kinematic
+    }
+
+    public void PlayerInteract(GameObject player)
+    {
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        if (playerController != null)
         {
-            Drop();
+            Transform carryPoint = playerController.carryPoint; // Get the carry point from the player
+            int playerNumber = playerController.playerNumber; // Get the player number from the PlayerController
+
+            // Check if the food is already picked up by another player
+            if (!isPickedUp || lastPlayerNumber == playerNumber)
+            {
+                // Allow the player to interact with the food only if it is not picked up 
+                // or if the player is the same player who last held it
+                if (!isPickedUp)
+                {
+                    PickUp(carryPoint, playerNumber);
+                }
+                else
+                {
+                    Drop(playerNumber);
+                }
+            }
+            else
+            {
+                Debug.Log("Food is already picked up by another player!");
+            }
         }
     }
 
-    public void PickUp(Transform carryPoint)
+    private void PickUp(Transform carryPoint, int playerNumber)
     {
         if (!isPickedUp)
         {
+            // Set the food's Rigidbody to kinematic while picked up
+            rb.isKinematic = true;
+            rb.useGravity = false; // Disable gravity when picked up
+
+            // Set the position of the food to the carry point
             transform.position = carryPoint.position;
-            transform.SetParent(carryPoint);
+            transform.SetParent(carryPoint); // Set the carry point as the parent
             isPickedUp = true;
 
+            // Disable the collider to prevent further interactions
             Collider foodCollider = GetComponent<Collider>();
             if (foodCollider != null)
             {
                 foodCollider.enabled = false;
             }
 
-            Debug.Log("Food picked up!");
+            lastPlayerNumber = playerNumber; // Update the last player number who picked up the food
+            Debug.Log("Food picked up by player number: " + playerNumber);
         }
         else
         {
@@ -42,21 +83,39 @@ public class Food : MonoBehaviour, IInteractable
         }
     }
 
-    public void Drop()
+    public void Drop(int playerNumber)
     {
         if (isPickedUp)
         {
-            transform.SetParent(null);
-            StartCoroutine(DropLerpAnimation());
-
-            Collider foodCollider = GetComponent<Collider>();
-            if (foodCollider != null)
+            Transform playerTransform = FindPlayerTransformByNumber(playerNumber);
+            if (playerTransform != null)
             {
-                foodCollider.enabled = true;
-            }
+                // Detach from the carry point
+                transform.SetParent(null); 
 
-            isPickedUp = false; // Update the state to not picked up
-            Debug.Log("Food dropped!");
+                // Apply a slight forward impulse
+                rb.isKinematic = false; // Set Rigidbody back to non-kinematic
+                rb.useGravity = true; // Enable gravity when dropped
+
+                // Calculate the forward direction relative to the player and apply a force
+                Vector3 forwardDirection = playerTransform.forward;
+                rb.AddForce(forwardDirection * 5f, ForceMode.Impulse); // Adjust the force value as needed
+
+                // Re-enable the collider after being dropped
+                Collider foodCollider = GetComponent<Collider>();
+                if (foodCollider != null)
+                {
+                    foodCollider.enabled = true;
+                }
+
+                isPickedUp = false; // Update the state to not picked up
+                lastPlayerNumber = playerNumber; // Keep track of who dropped the food
+                Debug.Log("Food dropped by player number: " + playerNumber);
+            }
+            else
+            {
+                Debug.Log("Player transform not found!");
+            }
         }
         else
         {
@@ -64,33 +123,17 @@ public class Food : MonoBehaviour, IInteractable
         }
     }
 
-    private IEnumerator DropLerpAnimation()
+    private Transform FindPlayerTransformByNumber(int playerNumber)
     {
-        Transform playerTransform = GameObject.FindWithTag("Player").transform;
-        Vector3 startPosition = transform.position;
-        Vector3 endPosition = playerTransform.position + playerTransform.forward * 1.5f;
-        float arcHeight = 1.0f;
-        float duration = 0.5f;
-
-        float elapsedTime = 0f;
-        while (elapsedTime < duration)
+        // This function searches for the player's transform using their player number
+        PlayerController[] players = FindObjectsOfType<PlayerController>();
+        foreach (PlayerController player in players)
         {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / duration;
-
-            Vector3 currentPos = Vector3.Lerp(startPosition, endPosition, t);
-            currentPos.y += arcHeight * Mathf.Sin(Mathf.PI * t);
-            transform.position = currentPos;
-            yield return null;
+            if (player.playerNumber == playerNumber)
+            {
+                return player.transform; // Return the player's transform
+            }
         }
-
-        transform.position = endPosition;
-
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = false;
-            rb.useGravity = true;
-        }
+        return null; // Return null if the player is not found
     }
 }
