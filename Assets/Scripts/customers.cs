@@ -16,6 +16,7 @@ public class Customers : MonoBehaviour
     public float moveSpeed = 5f;
     public float maxSpeed = 10f;
     public float friction = 5f;
+    public float happinessLoss = 10f;
     public GameObject[] tables = new GameObject[3];
 
     public GameObject exit; 
@@ -63,6 +64,7 @@ public class Customers : MonoBehaviour
             break;
 
             case CustomerState.Eating:
+            StartCoroutine(Eating());
             break;
 
             case CustomerState.Happy:
@@ -91,7 +93,7 @@ public class Customers : MonoBehaviour
         ui.enabled = true; 
         if (happinessLevel > 0) 
         {
-            happinessLevel -= Time.deltaTime * 10f; 
+            happinessLevel -= Time.deltaTime * happinessLoss; 
             Debug.Log(happinessLevel); 
             hb.UpdateHappy(happinessLevel);
             if(customerOrder.OrderDone)
@@ -104,6 +106,14 @@ public class Customers : MonoBehaviour
     }
 
     private void HeadToExit() {
+        if (customerOrder.playerNumber == '1')
+        {
+            IncomeManager.Instance.AddTip(1, happinessLevel);
+        }
+        else if (customerOrder.playerNumber == '2')
+        {
+            IncomeManager.Instance.AddSalary(2);
+        }
         ui.enabled = false; 
         if (Vector3.Distance(transform.position, exit.transform.position) >= 1.0f && exit) 
         {
@@ -112,10 +122,12 @@ public class Customers : MonoBehaviour
         }
     }
 
-    private void Eating()
+    private IEnumerator Eating()
     {
         ui.enabled = false;
-        //play rat eating animation
-        
+        // Play rat eating animation here
+
+        yield return new WaitForSeconds(3f);
+        curState = CustomerState.Happy;
     }
 }

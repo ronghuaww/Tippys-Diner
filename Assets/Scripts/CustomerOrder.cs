@@ -6,7 +6,7 @@ public class CustomerOrder : MonoBehaviour
     public string requiredFoodTag;
     public bool OrderDone = false;
 
-    private int playerNumber = -1;
+    public int playerNumber = -1;
 
     private List<Food> foodInTrigger = new List<Food>(); // List to track food in the trigger area
 

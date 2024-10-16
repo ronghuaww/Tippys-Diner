@@ -362,6 +362,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player1Income: 0
   player2Income: 0
+  player1Tips: 0
+  player2SalaryEarned: 0
 --- !u!4 &1115538161
 Transform:
   m_ObjectHideFlags: 0
@@ -963,6 +965,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 289702382}
     - target: {fileID: -5959439271939481670, guid: 4ef456223dcf74ea1984d7ad65a9bec0, type: 3}
+      propertyPath: happinessLoss
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -5959439271939481670, guid: 4ef456223dcf74ea1984d7ad65a9bec0, type: 3}
       propertyPath: tables.Array.data[0]
       value: 
       objectReference: {fileID: 1605167088}
@@ -1169,6 +1175,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1480869616}
     m_Modifications:
+    - target: {fileID: 2710079150228445653, guid: b83a0f2fe74bf8543a65ac59721807f8, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.54
+      objectReference: {fileID: 0}
     - target: {fileID: 4535628081056903641, guid: b83a0f2fe74bf8543a65ac59721807f8, type: 3}
       propertyPath: m_Name
       value: Hamburger Spawn
@@ -1187,7 +1197,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8915520048291088708, guid: b83a0f2fe74bf8543a65ac59721807f8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.68999994
+      value: 0.69
       objectReference: {fileID: 0}
     - target: {fileID: 8915520048291088708, guid: b83a0f2fe74bf8543a65ac59721807f8, type: 3}
       propertyPath: m_LocalPosition.z
