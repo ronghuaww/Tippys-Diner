@@ -92,12 +92,11 @@ public class Food : MonoBehaviour, IInteractable
                 transform.SetParent(null); 
 
                 // Apply a slight forward impulse
-                rb.isKinematic = false; // Set Rigidbody back to non-kinematic
-                rb.useGravity = true; // Enable gravity when dropped
-
+                rb.isKinematic = false;
+                rb.useGravity = true;
                 // Calculate the forward direction relative to the player and apply a force
                 Vector3 forwardDirection = playerTransform.forward;
-                rb.AddForce(forwardDirection * 5f, ForceMode.Impulse); // Adjust the force value as needed
+                rb.AddForce(forwardDirection * 5f, ForceMode.Impulse);
 
                 // Re-enable the collider after being dropped
                 Collider foodCollider = GetComponent<Collider>();
@@ -106,7 +105,7 @@ public class Food : MonoBehaviour, IInteractable
                     foodCollider.enabled = true;
                 }
 
-                isPickedUp = false; // Update the state to not picked up
+                isPickedUp = false;
                 lastPlayerNumber = playerNumber; // Keep track of who dropped the food
                 Debug.Log("Food dropped by player number: " + playerNumber);
             }
@@ -133,5 +132,13 @@ public class Food : MonoBehaviour, IInteractable
             }
         }
         return null; // Return null if the player is not found
+    }
+
+    // Method to destroy this food instance
+    public void DestroyFood()
+    {
+        // byebyelogic
+        Debug.Log("Destroying food instance.");
+        Destroy(gameObject); // Destroy the food GameObject
     }
 }

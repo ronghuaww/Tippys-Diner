@@ -28,24 +28,22 @@ public class Customers : MonoBehaviour
     [SerializeField] HappyBar hb;
     [SerializeField] Canvas ui;
 
-
     private Vector3 table_position;
-
     private float happinessLevel = 100f; 
     public CustomerState curState;
     public CustomerOrder customerOrder;
+    private int rand_table;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         hb = GetComponentInChildren<HappyBar>();
         ui = GetComponentInChildren<Canvas>();
-
     }
+
     void Start()
     {
-
-        int rand_table = Random.Range(0, 3);
+        rand_table = Random.Range(0, tables.Length);
         table_position = tables[rand_table].transform.position;
         rb.drag = friction;
         hb.UpdateHappy(happinessLevel);
@@ -53,68 +51,75 @@ public class Customers : MonoBehaviour
         ui.enabled = false; 
     }
 
-// Update is called once per frame
+    // Update is called once per frame
     void FixedUpdate()
     {
         switch (curState) {
             case CustomerState.Ordering:
-            SearchForTable();
-            break;
+                SearchForTable();
+                break;
 
             case CustomerState.Waiting:
-            WaitingForFood();
-            break;
+                WaitingForFood();
+                break;
 
             case CustomerState.Eating:
-            if (!isEating)
-            {
-                StartCoroutine(Eating());
-            }
-            break;
-
+                if (!isEating)
+                {
+                    StartCoroutine(Eating());
+                }
+                break;
 
             case CustomerState.Happy:
-            HeadToExit();
-            break;
-            
+                HeadToExit();
+                break;
+
             case CustomerState.Angry:
-            HeadToExit();
-            break;
+                HeadToExit();
+                break;
         }
     }
 
     private void SearchForTable() {
-        if (Vector3.Distance(transform.position, table_position) >= 1.3f)
-        {
+        if (Vector3.Distance(transform.position, table_position) >= 1.3f) {
             var step = moveSpeed * Time.deltaTime; // calculate distance to move
             transform.position = Vector3.MoveTowards(transform.position, table_position, step);
             rb.isKinematic = true;
         } else {
             curState = CustomerState.Waiting;
             customerOrder.AssignFoodOrder();
+
+            Transform eatingPointTransform = tables[rand_table].transform.Find("EatingPoint");
+            if (eatingPointTransform != null) {
+                customerOrder.eatingPoint = eatingPointTransform;
+                 //Debug.Log($"EatingPoint assigned for table {rand_table}: {eatingPointTransform.position}");
+            } else {
+                //Debug.LogError("EatingPoint not found on the selected table!");
+            }
         }
     }
+
 
     private void WaitingForFood() {
         ui.enabled = true; 
         if (happinessLevel > 0) 
         {
             happinessLevel -= Time.deltaTime * happinessLoss; 
-            //Debug.Log(happinessLevel); 
             hb.UpdateHappy(happinessLevel);
-            if(customerOrder.OrderDone)
+            if (customerOrder.OrderDone)
             {
                 curState = CustomerState.Eating;
             }
         }
-        else {
+        else 
+        {
             curState = CustomerState.Angry;
         }
     }
 
     private void HeadToExit() {
         ui.enabled = false;
-        if(Paid == false)
+        if (!Paid)
         {
             if (customerOrder.playerNumber == 1)
             {
@@ -139,10 +144,52 @@ public class Customers : MonoBehaviour
     {
         isEating = true;
         ui.enabled = false;
-        // Play rat eating animation here
+
+        if (customerOrder.EatingPoint != null)
+        {
+            Transform foodTransform = FindFoodTransform();
+            if (foodTransform != null)
+            {
+                foodTransform.position = customerOrder.EatingPoint.position; // Snap food to the EatingPoint position
+            }
+        }
+
+        // Play eating animation here
 
         yield return new WaitForSeconds(3f);
+
+        Transform foodChild = FindFoodTransform();
+        if (foodChild != null)
+        {
+            Food foodComponent = foodChild.GetComponent<Food>();
+            foodComponent.DestroyFood();
+            Debug.Log("destroyed");
+        }
+
         curState = CustomerState.Happy;
         isEating = false;
     }
+
+    private Transform FindFoodTransform()
+    {
+        // Check if eatingPoint is assigned
+        if (customerOrder.eatingPoint == null)
+        {
+            Debug.LogWarning("Eating point not assigned on " + gameObject.name);
+            return null;
+        }
+
+        // Iterate through all children of the EatingPoint
+        foreach (Transform child in customerOrder.eatingPoint)
+        {
+            if (child.CompareTag("Hamburger") || child.CompareTag("HotDog") || child.CompareTag("Soup"))
+            {
+                return child;
+            }
+        }
+
+        return null;
+    }
+
+
 }

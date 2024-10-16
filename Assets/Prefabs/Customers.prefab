@@ -265,6 +265,7 @@ MonoBehaviour:
   moveSpeed: 5
   maxSpeed: 10
   friction: 5
+  happinessLoss: 10
   tables:
   - {fileID: 0}
   - {fileID: 0}
@@ -309,6 +310,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   requiredFoodTag: 
   OrderDone: 0
+  playerNumber: -1
+  eatingPoint: {fileID: 0}
 --- !u!1 &3875398958361197663
 GameObject:
   m_ObjectHideFlags: 0
