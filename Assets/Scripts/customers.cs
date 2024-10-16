@@ -17,6 +17,8 @@ public class Customers : MonoBehaviour
     public float maxSpeed = 10f;
     public float friction = 5f;
     public float happinessLoss = 10f;
+    private bool isEating = false;
+    private bool Paid = false;
     public GameObject[] tables = new GameObject[3];
 
     public GameObject exit; 
@@ -64,8 +66,12 @@ public class Customers : MonoBehaviour
             break;
 
             case CustomerState.Eating:
-            StartCoroutine(Eating());
+            if (!isEating)
+            {
+                StartCoroutine(Eating());
+            }
             break;
+
 
             case CustomerState.Happy:
             HeadToExit();
@@ -94,27 +100,34 @@ public class Customers : MonoBehaviour
         if (happinessLevel > 0) 
         {
             happinessLevel -= Time.deltaTime * happinessLoss; 
-            Debug.Log(happinessLevel); 
+            //Debug.Log(happinessLevel); 
             hb.UpdateHappy(happinessLevel);
             if(customerOrder.OrderDone)
             {
                 curState = CustomerState.Eating;
             }
-        } else {
+        }
+        else {
             curState = CustomerState.Angry;
         }
     }
 
     private void HeadToExit() {
-        if (customerOrder.playerNumber == '1')
+        ui.enabled = false;
+        if(Paid == false)
         {
-            IncomeManager.Instance.AddTip(1, happinessLevel);
+            if (customerOrder.playerNumber == 1)
+            {
+                IncomeManager.Instance.AddTip(1, happinessLevel);
+                Debug.Log("Added Money");
+            }
+            else if (customerOrder.playerNumber == 2)
+            {
+                IncomeManager.Instance.AddSalary(2);
+                Debug.Log("Added Money");
+            }
+            Paid = true;
         }
-        else if (customerOrder.playerNumber == '2')
-        {
-            IncomeManager.Instance.AddSalary(2);
-        }
-        ui.enabled = false; 
         if (Vector3.Distance(transform.position, exit.transform.position) >= 1.0f && exit) 
         {
             var step = moveSpeed * Time.deltaTime; // calculate distance to move
@@ -124,10 +137,12 @@ public class Customers : MonoBehaviour
 
     private IEnumerator Eating()
     {
+        isEating = true;
         ui.enabled = false;
         // Play rat eating animation here
 
         yield return new WaitForSeconds(3f);
         curState = CustomerState.Happy;
+        isEating = false;
     }
 }
