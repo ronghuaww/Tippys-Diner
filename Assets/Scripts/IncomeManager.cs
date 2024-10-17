@@ -7,8 +7,8 @@ public class IncomeManager : MonoBehaviour
     public static IncomeManager Instance { get; private set; }
 
     private Dictionary<int, float> playerIncomes = new Dictionary<int, float>();
-    private float player1BaseTip = 5f; // Base tip amount for Player 1
-    private float player2Salary = 10f; // Fixed salary amount for Player 2
+    private float player1BaseTip = 13f; // Base tip amount for Player 1
+    private float player2Salary = 15f; // Fixed salary amount for Player 2
 
     // Make sure the inspector can show the incomes for player 1 and player 2
     [SerializeField] private float player1Income;
@@ -41,7 +41,26 @@ public class IncomeManager : MonoBehaviour
         if (playerNumber == 1)
         {
             // Calculate tip amount based on customer's happiness level and a random factor
-            float tipAmount = player1BaseTip * Random.Range(0.5f, 1.5f) * happinessLevel;
+            //amnt = base * randomrange(0 - 5, 10, 15, 20, 25) based off of happiness Level/100
+            float happinessPerc = happinessLevel/100f;
+            float tipPerc = 0;
+            if(happinessPerc <= .25)
+            {
+                tipPerc = 0.05f;
+            }
+            else if (happinessPerc <= .50)
+            {
+                tipPerc = 0.15f;
+            }
+            else if (happinessPerc <= .75)
+            {
+                tipPerc = 0.20f;
+            }
+            else if (happinessPerc <= 1)
+            {
+                tipPerc = 0.25f;
+            }
+            float tipAmount = player1BaseTip * Random.Range(0f, tipPerc);
             playerIncomes[playerNumber] += tipAmount;
 
             UpdatePlayerIncomeProperties();
@@ -73,7 +92,6 @@ public class IncomeManager : MonoBehaviour
         player2Income = playerIncomes[2];
     }
 
-    // Optional: Create a method to get income for external access
     public float GetIncome(int playerNumber)
     {
         return playerIncomes.ContainsKey(playerNumber) ? playerIncomes[playerNumber] : 0f;
