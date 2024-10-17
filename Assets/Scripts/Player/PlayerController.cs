@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveInput;
 
     private PlayerInteract playerInteract; // Reference to the PlayerInteract script
+    private PlayerAnimatorController playerAnimatorController; //animation script
 
     void Awake()
     {
@@ -30,6 +31,7 @@ public class PlayerController : MonoBehaviour
         AssignActionsBasedOnPlayerNumber();
 
         playerInteract = GetComponent<PlayerInteract>();
+        playerAnimatorController = GetComponent<PlayerAnimatorController>();
     }
 
     void OnEnable()
@@ -87,6 +89,7 @@ void Move()
     // Rotate the player to face the movement
     if (moveDirection != Vector3.zero)
     {
+        playerAnimatorController.SetWalkingAnimation(true);
         Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
@@ -100,8 +103,10 @@ void Move()
     // Slow down the player smoothly when no input is provided
     if (moveInput == Vector2.zero)
     {
+        playerAnimatorController.SetWalkingAnimation(false);
         rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, friction * Time.deltaTime);
     }
+    
 }
 
 

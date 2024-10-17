@@ -10,10 +10,12 @@ public class PlayerInteract : MonoBehaviour
     public Transform carryPoint; // Reference to the carry point for food
 
     private PlayerController playerController; // Reference to PlayerController to get player number
+    private PlayerAnimatorController playerAnimatorController;
 
     private void Awake()
     {
         playerController = GetComponent<PlayerController>(); // Get the PlayerController component
+        playerAnimatorController = GetComponent<PlayerAnimatorController>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -40,24 +42,40 @@ public class PlayerInteract : MonoBehaviour
         }
     }
 
-    public void OnInteract(InputAction.CallbackContext context)
+public void OnInteract(InputAction.CallbackContext context)
+{
+    if (context.performed)
     {
-        if (context.performed)
+        // If there is food available to interact with
+        if (currentFood != null)
         {
-            // If there is food available to interact with
-            if (currentFood != null)
+            if (!currentFood.IsPickedUp || currentFood.LastPlayerNumber == playerController.playerNumber)
             {
+                // If the food is not picked up or is being held by the current player, interact with it
                 Debug.Log("Interacting with food!");
                 currentFood.PlayerInteract(gameObject); // Pass the player's GameObject to the method
-            }
-            // If no food is present, interact with the food spawn to order food
-            else if (currentFoodSpawn != null && !currentFoodSpawn.IsFoodGenerating)
-            {
-                Debug.Log("Ordering food!");
-                currentFoodSpawn.GenerateFood();
+
+                // Trigger the correct animation based on the interaction state
+                if (currentFood.IsPickedUp)
+                {
+                    playerAnimatorController.TriggerPickupAnimation();
+                }
+                else
+                {
+                    playerAnimatorController.TriggerPutdownAnimation();
+                }
             }
         }
+        // If no food is present, interact with the food spawn to order food
+        else if (currentFoodSpawn != null && !currentFoodSpawn.IsFoodGenerating)
+        {
+            Debug.Log("Ordering food!");
+            playerAnimatorController.TriggerPutdownAnimation();
+            currentFoodSpawn.GenerateFood();
+        }
     }
+}
+
 
     public Food GetCarriedFood()
     {

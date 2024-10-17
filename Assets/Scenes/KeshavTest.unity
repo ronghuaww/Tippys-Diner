@@ -362,8 +362,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player1Income: 0
   player2Income: 0
-  player1Tips: 0
-  player2SalaryEarned: 0
 --- !u!4 &1115538161
 Transform:
   m_ObjectHideFlags: 0
@@ -822,6 +820,10 @@ PrefabInstance:
       propertyPath: m_CollisionDetection
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5135535539458419792, guid: c818f370486014617be11d2a216dc900, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: b33bc37926c9a00469a4b0401bd36027, type: 2}
     - target: {fileID: 5757959245103050439, guid: c818f370486014617be11d2a216dc900, type: 3}
       propertyPath: m_Name
       value: Player (1)

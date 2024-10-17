@@ -18,6 +18,11 @@ public class FoodSpawn : MonoBehaviour
         timerUI.SetActive(false);
     }
 
+    private void Update()
+    {
+        FaceCamera();
+    }
+
     public void GenerateFood()
     {
         if (IsFoodGenerating) return; // Prevent multiple generation if a food is being generated
@@ -62,6 +67,18 @@ public class FoodSpawn : MonoBehaviour
         if(food != null)
         {
             Destroy(food);
+        }
+    }
+
+    private void FaceCamera()
+    {
+        if (timerUI != null)
+        {
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                timerUI.transform.LookAt(timerUI.transform.position + mainCamera.transform.rotation * Vector3.forward, mainCamera.transform.rotation * Vector3.up);
+            }
         }
     }
 }
