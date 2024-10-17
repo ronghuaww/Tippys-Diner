@@ -109,7 +109,7 @@ public class ResultsScreenManager : MonoBehaviour
         // Check if both players have confirmed
         if (player1Confirmed && player2Confirmed)
         {
-            LoadNextScene(); // Load the next scene
+            GameManager.Instance.LoadScene("KeshavTest");
         }
     }
 
