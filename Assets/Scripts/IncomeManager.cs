@@ -40,26 +40,10 @@ public class IncomeManager : MonoBehaviour
     {
         if (playerNumber == 1)
         {
-            // Calculate tip amount based on customer's happiness level and a random factor
-            //amnt = base * randomrange(0 - 5, 10, 15, 20, 25) based off of happiness Level/100
-            float happinessPerc = happinessLevel/100f;
-            float tipPerc = 0;
-            if(happinessPerc <= .25)
-            {
-                tipPerc = 0.05f;
-            }
-            else if (happinessPerc <= .50)
-            {
-                tipPerc = 0.15f;
-            }
-            else if (happinessPerc <= .75)
-            {
-                tipPerc = 0.20f;
-            }
-            else if (happinessPerc <= 1)
-            {
-                tipPerc = 0.25f;
-            }
+            float happinessPerc = happinessLevel / 100f;
+            float tipPerc = happinessPerc <= .25 ? 0.05f :
+                            happinessPerc <= .50 ? 0.15f :
+                            happinessPerc <= .75 ? 0.20f : 0.25f;
             float tipAmount = player1BaseTip * Random.Range(0f, tipPerc);
             playerIncomes[playerNumber] += tipAmount;
 
@@ -94,6 +78,21 @@ public class IncomeManager : MonoBehaviour
 
     public float GetIncome(int playerNumber)
     {
-        return playerIncomes.ContainsKey(playerNumber) ? playerIncomes[playerNumber] : 0f;
+        // Return the income directly from the dictionary
+        return playerIncomes.TryGetValue(playerNumber, out float income) ? income : 0f;
     }
+
+    public void SetTestIncome(int playerNumber, float income)
+    {
+        if (playerIncomes.ContainsKey(playerNumber))
+        {
+            playerIncomes[playerNumber] = income;
+            UpdatePlayerIncomeProperties();
+        }
+        else
+        {
+            Debug.LogWarning($"Player {playerNumber} does not exist.");
+        }
+    }
+
 }

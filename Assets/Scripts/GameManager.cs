@@ -49,9 +49,7 @@ public class GameManager : MonoBehaviour
         // Wait until the asynchronous scene loading is complete
         while (!asyncLoad.isDone)
         {
-            yield return null; // Wait until the next frame
+            yield return null;
         }
-
-        // Optional: Add any logic after the scene is loaded (like hiding a loading screen)
     }
 }
