@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 6103593216364633651}
   - component: {fileID: 4268765388149071980}
   - component: {fileID: 1753129266855550136}
-  - component: {fileID: 5382677882547526905}
+  - component: {fileID: 5201683676847995838}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -256,7 +256,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5382677882547526905
+--- !u!65 &5201683676847995838
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -275,7 +275,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1.0000002, y: 1.0000001, z: 1.0000002}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4580440761278758278
 GameObject:
@@ -741,6 +741,10 @@ PrefabInstance:
     - target: {fileID: 7696475671159393121, guid: b83a0f2fe74bf8543a65ac59721807f8, type: 3}
       propertyPath: m_Size.x
       value: 2.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 7696475671159393121, guid: b83a0f2fe74bf8543a65ac59721807f8, type: 3}
+      propertyPath: m_Center.x
+      value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 7863158091307656801, guid: b83a0f2fe74bf8543a65ac59721807f8, type: 3}
       propertyPath: m_AnchorMax.x
