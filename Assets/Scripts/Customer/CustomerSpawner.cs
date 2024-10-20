@@ -27,6 +27,7 @@ public class CustomerSpawner : MonoBehaviour
         // Only check for active customers if there are no remaining customers
         if (remainingCustomers == 0 && !AreCustomersActive())
         {
+            IncomeManager.Instance.AddSalary(2);
             GameManager.Instance.LoadScene("Results");
         }
     }

@@ -7,8 +7,8 @@ public class IncomeManager : MonoBehaviour
     public static IncomeManager Instance { get; private set; }
 
     private Dictionary<int, float> playerIncomes = new Dictionary<int, float>();
-    private float player1BaseTip = 13f; // Base tip amount for Player 1
-    private float player2Salary = 15f; // Fixed salary amount for Player 2
+    private float player1BaseTip = 13f; // Base food amount
+    private float player2Salary = 70f; // Fixed salary amount for Player 2
 
     // Make sure the inspector can show the incomes for player 1 and player 2
     [SerializeField] private float player1Income;
@@ -43,9 +43,9 @@ public class IncomeManager : MonoBehaviour
             float happinessPerc = happinessLevel / 100f;
             float tipPerc = happinessPerc <= .25 ? 0.05f :
                             happinessPerc <= .50 ? 0.15f :
-                            happinessPerc <= .75 ? 0.20f : 0.25f;
+                            happinessPerc <= .75 ? 0.20f : 0.3f;
             float tipAmount = player1BaseTip * Random.Range(0f, tipPerc);
-            playerIncomes[playerNumber] += tipAmount;
+            playerIncomes[playerNumber] += 15 + tipAmount;
 
             UpdatePlayerIncomeProperties();
         }
