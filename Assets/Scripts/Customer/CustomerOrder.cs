@@ -1,21 +1,53 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CustomerOrder : MonoBehaviour
 {
     public Transform EatingPoint { get; set; }
     public string requiredFoodTag;
+
+
     public bool OrderDone = false;
 
     public int playerNumber = -1;
 
+    public Image hamburgerIcon; 
+    public Image hotdogIcon; 
+    public Image soupIcon; 
+
+
     private List<Food> foodInTrigger = new List<Food>(); // List to track food in the trigger area
+
+
 
     // Reference to the eating point where the food should snap to
     public Transform eatingPoint;
 
+    void Awake()
+    {
+        foreach(var icon in GetComponentsInChildren<Image>(true))
+        {
+            if(icon.name == "HamburgerIcon") 
+            {
+                hamburgerIcon = icon;
+
+            } else if (icon.name == "HotdogIcon") 
+            {
+                hotdogIcon = icon;
+
+            } else if (icon.name == "SoupIcon") 
+            {
+                soupIcon = icon;
+            }
+        }
+    }
+
     private void Start()
     {
+        hamburgerIcon.enabled = false;
+        hotdogIcon.enabled = false;
+        soupIcon.enabled = false;
     }
 
     private void Update()
@@ -43,6 +75,17 @@ public class CustomerOrder : MonoBehaviour
         string[] possibleOrders = { "Hamburger", "Soup", "HotDog" };
         int randomIndex = Random.Range(0, possibleOrders.Length);
         requiredFoodTag = possibleOrders[randomIndex];
+
+        if (randomIndex == 0) {
+        hamburgerIcon.enabled = true;
+
+        } else if (randomIndex == 1) {
+            soupIcon.enabled = true;
+            
+        } else if (randomIndex == 2) {
+            hotdogIcon.enabled = true;
+        }
+
 
         Debug.Log("Customer has ordered: " + requiredFoodTag);
     }
