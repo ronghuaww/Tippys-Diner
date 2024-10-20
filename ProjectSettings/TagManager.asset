@@ -9,6 +9,7 @@ TagManager:
   - Hamburger
   - FoodSpawn
   - CarryPoint
+  - Customer
   layers:
   - Default
   - TransparentFX

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public enum CustomerState
 {
@@ -20,7 +21,7 @@ public class Customers : MonoBehaviour
     public float happinessLoss = 10f;
     private bool isEating = false;
     private bool Paid = false;
-    public GameObject[] tables = new GameObject[3];
+    private GameObject assignedTable;
     public GameObject exit;
 
     private Rigidbody rb;
@@ -32,9 +33,21 @@ public class Customers : MonoBehaviour
     private float happinessLevel = 100f;
     public CustomerState curState;
     public CustomerOrder customerOrder;
-    private int rand_table;
     private CustomerAnimatorController customerAnimatorController; // Animation script
 
+    public event Action OnLeave;
+
+    public void Initialize(GameObject assignedTable, GameObject exitPoint)
+    {
+        exit = exitPoint;
+        table_position = assignedTable.transform.position;
+
+        Transform eatingPointTransform = assignedTable.transform.Find("EatingPoint");
+        if (eatingPointTransform != null)
+        {
+            customerOrder.eatingPoint = eatingPointTransform;
+        }
+    }
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -45,8 +58,6 @@ public class Customers : MonoBehaviour
 
     void Start()
     {
-        rand_table = Random.Range(0, tables.Length);
-        table_position = tables[rand_table].transform.position;
         rb.drag = friction;
         hb.UpdateHappy(happinessLevel);
         curState = CustomerState.Ordering;
@@ -109,12 +120,6 @@ public class Customers : MonoBehaviour
         {
             curState = CustomerState.Waiting;
             customerOrder.AssignFoodOrder();
-
-            Transform eatingPointTransform = tables[rand_table].transform.Find("EatingPoint");
-            if (eatingPointTransform != null)
-            {
-                customerOrder.eatingPoint = eatingPointTransform;
-            }
         }
     }
 
@@ -141,6 +146,11 @@ public class Customers : MonoBehaviour
         if (Vector3.Distance(transform.position, targetPosition) >= 1.0f && exit)
         {
             MoveTowardsTarget(targetPosition);
+        }
+        else
+        {
+            OnLeave?.Invoke();
+            Destroy(gameObject);
         }
     }
 

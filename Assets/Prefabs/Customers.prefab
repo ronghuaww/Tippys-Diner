@@ -756,7 +756,7 @@ GameObject:
   - component: {fileID: 3623582364920799663}
   m_Layer: 0
   m_Name: Customers
-  m_TagString: Untagged
+  m_TagString: Customer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -893,11 +893,7 @@ MonoBehaviour:
   moveSpeed: 5
   maxSpeed: 10
   friction: 5
-  happinessLoss: 10
-  tables:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  happinessLoss: 1
   exit: {fileID: 0}
   hb: {fileID: 8588060255291589578}
   ui: {fileID: 0}

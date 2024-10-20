@@ -1,6 +1,7 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement; // Required for scene management
+using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,19 +22,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        // You can initialize any starting logic here
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // You can handle per-frame logic here
-    }
-
-    // Method to handle scene transitions
+    // Method to load a scene by name
     public void LoadScene(string sceneName)
     {
         StartCoroutine(LoadSceneAsync(sceneName));
@@ -41,17 +30,13 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator LoadSceneAsync(string sceneName)
     {
-        // Optional: Add loading logic (like showing a loading screen)
-
         // Load the new scene asynchronously
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
 
         // Wait until the asynchronous scene loading is complete
         while (!asyncLoad.isDone)
         {
-            yield return null; // Wait until the next frame
+            yield return null;
         }
-
-        // Optional: Add any logic after the scene is loaded (like hiding a loading screen)
     }
 }
