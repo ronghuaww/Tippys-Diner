@@ -23,9 +23,13 @@ public class CustomerOrder : MonoBehaviour
         // Check for food delivery
         if (!OrderDone)
         {
+            // Remove any null food items from the list
+            foodInTrigger.RemoveAll(item => item == null);
+
             foreach (Food foodItem in foodInTrigger)
             {
-                if (!foodItem.IsPickedUp && foodItem.CompareTag(requiredFoodTag))
+                // Check if food item is valid and has not been picked up
+                if (foodItem != null && !foodItem.IsPickedUp && foodItem.CompareTag(requiredFoodTag))
                 {
                     TryDeliverFood(foodItem);
                     break; // Exit loop after finding the first matching food

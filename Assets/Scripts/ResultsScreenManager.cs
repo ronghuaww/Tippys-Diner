@@ -8,31 +8,35 @@ using System.Collections;
 public class ResultsScreenManager : MonoBehaviour
 {
     // Reference to UI elements
-    public TMP_Text player1MoneyText; // TextMeshPro for displaying Player 1's money
-    public TMP_Text player2MoneyText; // TextMeshPro for displaying Player 2's money
-    public RectTransform player1Bar; // RectTransform for Player 1's income bar
-    public RectTransform player2Bar; // RectTransform for Player 2's income bar
-    public TMP_Text player1Label; // TextMeshPro for Player 1's label
-    public TMP_Text player2Label; // TextMeshPro for Player 2's label
-    public float heightMultiplier = 10f; // Multiplier to scale bar height for more dramatic effect
-    public float animationDuration = 2f; // Duration for the height and number animation
-    public string nextSceneName; // Name of the next scene to load
+    public TMP_Text player1MoneyText;
+    public TMP_Text player2MoneyText; 
+    public RectTransform player1Bar;
+    public RectTransform player2Bar; 
+    public TMP_Text player1Label;
+    public TMP_Text player2Label;
+    public TMP_Text player1SubtractionText;
+    public TMP_Text player2SubtractionText; 
+    public TMP_Text brokeText;
+    public TMP_Text surviveText;
+    public float heightMultiplier = 10f; 
+    public float animationDuration = 2f;
+    public string nextSceneName; 
 
     private float targetPlayer1Income;
     private float targetPlayer2Income;
     private bool player1Confirmed = false;
     private bool player2Confirmed = false;
+    private const float SUBTRACTION_AMOUNT = 32f;
 
     void Awake()
     {
         IncomeManager.Instance.AddSalary(2);
+        brokeText.gameObject.SetActive(false);
+        surviveText.gameObject.SetActive(false);
     }
+
     private void Start()
     {
-        // Set test incomes for debugging purposes
-        // IncomeManager.Instance.SetTestIncome(1, 100f); // Example test value for Player 1
-        // IncomeManager.Instance.SetTestIncome(2, 150f); // Example test value for Player 2
-
         // Access the singleton instance of IncomeManager and get the target incomes
         targetPlayer1Income = IncomeManager.Instance.GetIncome(1);
         targetPlayer2Income = IncomeManager.Instance.GetIncome(2);
@@ -47,6 +51,9 @@ public class ResultsScreenManager : MonoBehaviour
         // Update the labels
         player1Label.text = "Player 1"; // Set initial label for Player 1
         player2Label.text = "Player 2"; // Set initial label for Player 2
+        // Hide subtraction texts initially
+        player1SubtractionText.gameObject.SetActive(false);
+        player2SubtractionText.gameObject.SetActive(false);
     }
 
     private IEnumerator AnimateIncomeBars()
@@ -60,6 +67,7 @@ public class ResultsScreenManager : MonoBehaviour
         float currentPlayer1Income = 0f;
         float currentPlayer2Income = 0f;
 
+        // Animate the initial income bars
         while (elapsedTime < animationDuration)
         {
             elapsedTime += Time.deltaTime;
@@ -87,6 +95,62 @@ public class ResultsScreenManager : MonoBehaviour
         SetBarHeight(player2Bar, targetHeight2);
         player1MoneyText.text = $"${targetPlayer1Income:F2}";
         player2MoneyText.text = $"${targetPlayer2Income:F2}";
+
+         yield return new WaitForSeconds(3f);
+        // Perform the subtraction
+        StartCoroutine(ApplySubtraction());
+    }
+
+private IEnumerator ApplySubtraction()
+{
+    // Subtract the fixed amount from each player's income
+    targetPlayer1Income -= SUBTRACTION_AMOUNT;
+    targetPlayer2Income -= SUBTRACTION_AMOUNT;
+
+    // Update the bar heights and text after subtraction
+    float newHeight1 = Mathf.Max(targetPlayer1Income * heightMultiplier, 0);
+    float newHeight2 = Mathf.Max(targetPlayer2Income * heightMultiplier, 0);
+
+    SetBarHeight(player1Bar, newHeight1);
+    SetBarHeight(player2Bar, newHeight2);
+    
+    // Update the subtraction texts
+    player1SubtractionText.text = $"-${SUBTRACTION_AMOUNT:F2}";
+    player2SubtractionText.text = $"-${SUBTRACTION_AMOUNT:F2}";
+
+    // Make the subtraction texts visible
+    player1SubtractionText.gameObject.SetActive(true);
+    player2SubtractionText.gameObject.SetActive(true);
+
+    // Wait for 5 seconds before starting to fade out
+    yield return new WaitForSeconds(5f);
+
+    // Start fading out the subtraction texts
+    StartCoroutine(FadeOutSubtractionTexts(player1SubtractionText));
+    StartCoroutine(FadeOutSubtractionTexts(player2SubtractionText));
+
+    // Update the money text fields with the new values
+    player1MoneyText.text = $"${targetPlayer1Income:F2}";
+    player2MoneyText.text = $"${targetPlayer2Income:F2}";
+}
+
+
+    private IEnumerator FadeOutSubtractionTexts(TMP_Text subtractionText)
+    {
+        // Optional: Animate the fade-out effect
+        Color originalColor = subtractionText.color;
+        float elapsedTime = 0f;
+        float fadeDuration = 1f; // Adjust the duration as needed
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
+            subtractionText.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            yield return null;
+        }
+
+        subtractionText.gameObject.SetActive(false); // Hide the text after fading out
     }
 
     private void SetBarHeight(RectTransform bar, float height)
@@ -99,6 +163,17 @@ public class ResultsScreenManager : MonoBehaviour
 
     private void Update()
     {
+        if(targetPlayer1Income <= 0){
+            brokeText.text = $"Player 1 is BROKE";
+            brokeText.gameObject.SetActive(true);
+        }
+        else if(targetPlayer2Income <= 0){
+            brokeText.text = $"Player 2 is BROKE";
+            brokeText.gameObject.SetActive(true);
+        }
+        else{
+            surviveText.gameObject.SetActive(false);
+        }
         // Check for confirmation key presses
         if (Input.GetKeyDown(KeyCode.RightShift))
         {

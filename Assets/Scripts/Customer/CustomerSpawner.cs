@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro; // Import the TextMeshPro namespace
 
 public class CustomerSpawner : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class CustomerSpawner : MonoBehaviour
 
     [SerializeField] private int remainingCustomers;
 
+    // Add a public field for the TMP Text
+    public TMP_Text remainingCustomersText; // Reference to the TMP Text component
+
     void Start()
     {
         remainingCustomers = MaxCustomers;
@@ -20,6 +24,9 @@ public class CustomerSpawner : MonoBehaviour
 
         // Optionally, start spawning customers at the beginning
         StartCoroutine(SpawnCustomers());
+
+        // Update the TMP Text at the start
+        UpdateRemainingCustomersText();
     }
 
     void FixedUpdate()
@@ -61,6 +68,9 @@ public class CustomerSpawner : MonoBehaviour
             customerScript.OnLeave += () => FreeTable(assignedTable);
 
             remainingCustomers -= 1;
+
+            // Update the TMP Text whenever a customer is spawned
+            UpdateRemainingCustomersText();
         }
     }
 
@@ -77,5 +87,14 @@ public class CustomerSpawner : MonoBehaviour
     {
         // Check if there are any active customer instances in the scene
         return GameObject.FindGameObjectsWithTag("Customer").Length > 0;
+    }
+
+    private void UpdateRemainingCustomersText()
+    {
+        // Update the TMP Text to display the remaining number of customers
+        if (remainingCustomersText != null)
+        {
+            remainingCustomersText.text = $"{remainingCustomers}";
+        }
     }
 }
