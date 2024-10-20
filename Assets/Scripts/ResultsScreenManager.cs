@@ -23,6 +23,10 @@ public class ResultsScreenManager : MonoBehaviour
     private bool player1Confirmed = false;
     private bool player2Confirmed = false;
 
+    void Awake()
+    {
+        IncomeManager.Instance.AddSalary(2);
+    }
     private void Start()
     {
         // Set test incomes for debugging purposes
@@ -109,7 +113,7 @@ public class ResultsScreenManager : MonoBehaviour
         // Check if both players have confirmed
         if (player1Confirmed && player2Confirmed)
         {
-            GameManager.Instance.LoadScene("KeshavTest");
+            GameManager.Instance.LoadScene("Gameplay");
         }
     }
 

@@ -134,11 +134,6 @@ public class Customers : MonoBehaviour
                 IncomeManager.Instance.AddTip(1, happinessLevel);
                 Debug.Log("Added Money");
             }
-            else if (customerOrder.playerNumber == 2)
-            {
-                IncomeManager.Instance.AddSalary(2);
-                Debug.Log("Added Money");
-            }
             Paid = true;
         }
 

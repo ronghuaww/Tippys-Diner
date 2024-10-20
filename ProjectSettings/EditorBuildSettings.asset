@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/KeshavTest.unity
     guid: 69ba9a5c3fb1eb54a9bb02fcb6c4862b
+  - enabled: 1
+    path: Assets/Scenes/Gameplay.unity
+    guid: c3be4bea11b084ad4a75ed8c97b118d6
   - enabled: 1
     path: Assets/Scenes/Results.unity
     guid: 5442f1337fa3ac14d8526c371d680cc1

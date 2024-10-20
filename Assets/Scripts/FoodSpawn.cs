@@ -20,7 +20,7 @@ public class FoodSpawn : MonoBehaviour
 
     private void Update()
     {
-        FaceCamera();
+        // FaceCamera();
     }
 
     public void GenerateFood()
