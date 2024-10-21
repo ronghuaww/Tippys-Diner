@@ -1457,6 +1457,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1610374809}
     - target: {fileID: 5683767913033139809, guid: 9661b6d7b7fc50f4cbf53395bb670090, type: 3}
+      propertyPath: MaxCustomers
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5683767913033139809, guid: 9661b6d7b7fc50f4cbf53395bb670090, type: 3}
       propertyPath: tables.Array.size
       value: 6
       objectReference: {fileID: 0}
